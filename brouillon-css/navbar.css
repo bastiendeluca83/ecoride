@@ -1,0 +1,38 @@
+/* backend/src/header.css */
+.navbar {
+    background: linear-gradient(90deg, #38b000, #70e000);
+    padding: 15px 0;
+    color: #fff;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+    font-family: Arial, sans-serif;
+}
+
+.navbar-container {
+    width: 90%;
+    max-width: 1200px;
+    margin: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.navbar-logo {
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+.navbar-links a {
+    margin-left: 20px;
+    color: #fff;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.navbar-links a:hover {
+    color: #003300;
+}
