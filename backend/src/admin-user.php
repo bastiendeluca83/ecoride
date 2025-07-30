@@ -12,7 +12,7 @@ $pdo = new PDO(
 );
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-// Suppression
+// Suppression//
 if (isset($_GET["delete"])) {
     $stmt = $pdo->prepare("DELETE FROM users WHERE id = ?");
     $stmt->execute([$_GET["delete"]]);
@@ -21,7 +21,7 @@ if (isset($_GET["delete"])) {
     exit;
 }
 
-// Modification
+// Modification//
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["edit_id"])) {
     $stmt = $pdo->prepare("UPDATE users SET firstname = ?, lastname = ?, email = ? WHERE id = ?");
     $stmt->execute([

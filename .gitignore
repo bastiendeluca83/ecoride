@@ -1,23 +1,19 @@
-# Node
+
 node_modules/
 npm-debug.log
 
-# Docker
+
 *.env
 .env.local
 docker-compose.override.yml
 
-# Composer / PHP
 /vendor/
 composer.lock
 
-# SQL
+
 *.sql
 
-# Logs
 *.log
-
-# IDE / OS / fichiers système
 .vscode/
 .DS_Store
 *.swp

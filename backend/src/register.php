@@ -45,6 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
   <link rel="stylesheet" href="register.css">
+  <link rel="icon" href="assets/favicon.png" type="image/png">
 </head>
 <body>
 
@@ -101,20 +102,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
   </div>
 </div>
-<footer class="text-center py-4" style="background-color: #24884e;">
-  <div class="container text-white">
-    <p class="mb-2 fw-bold">contact@ecoride.site</p>
-    <hr class="my-2" style="max-width: 300px; margin: auto; border-color: rgba(255,255,255,0.3);">
-    <div class="d-flex justify-content-center gap-4 flex-wrap mt-3">
-      <a href="mentions-legales.php" class="text-white text-decoration-none">Mentions légales</a>
-      <a href="confidentialite.php" class="text-white text-decoration-none">Politique de confidentialité</a>
-      <a href="cgu.php" class="text-white text-decoration-none">CGU</a>
-    </div>
-  </div>
+</div>
+</div>
 </footer>
-    </div>
-  </div>
-</footer>
+<?php include 'footer-green.php'; ?>
 <?php include 'footer.php'; ?>
 </body>
 </html>

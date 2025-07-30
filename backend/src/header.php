@@ -1,3 +1,7 @@
+<?php
+ob_start();
+?>
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -9,12 +13,13 @@
   <title>EcoRide</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="icon" href="assets/favicon.png" type="image/svg+xml">
 </head>
 <body>
 
 <nav class="navbar navbar-expand-lg px-3" style="background-color: #24884e;" role="navigation" aria-label="Menu principal">
   <a class="navbar-brand d-flex align-items-center text-white" href="index.php" aria-label="Accueil EcoRide">
-    <img src="logo.png" alt="Logo EcoRide" width="32" height="32" class="me-2 rounded-circle">
+    <img src="assets/favicon.png" alt="Logo EcoRide" width="32" height="32" class="me-2 rounded-circle">
     <span class="fw-bold">EcoRide</span>
   </a>
 
@@ -47,6 +52,7 @@
 </nav>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
 
 
 

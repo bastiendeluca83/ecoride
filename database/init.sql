@@ -1,8 +1,8 @@
 -- Suppression si existant
-DROP TABLE IF EXISTS admins;
-DROP TABLE IF EXISTS users;
-DROP TABLE IF EXISTS employees;
 DROP TABLE IF EXISTS rides;
+DROP TABLE IF EXISTS employees;
+DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS admins;
 
 -- Table admins (créé manuellement, pas d'inscription possible)
 CREATE TABLE IF NOT EXISTS admins (
@@ -11,10 +11,11 @@ CREATE TABLE IF NOT EXISTS admins (
     password VARCHAR(255) NOT NULL
 );
 
--- Ajout d'un admin par défaut : admin / test123 (à hasher si besoin)
+-- Ajout d'un admin par défaut : admin / test123
 INSERT INTO admins (username, password)
 VALUES ('admin', 'test123');
 
+-- Table users
 CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     pseudo VARCHAR(50) NOT NULL,
@@ -26,6 +27,14 @@ CREATE TABLE IF NOT EXISTS users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Ajout admin dans users : admin@ecoride.com / admin123
+INSERT INTO users (pseudo, email, password, role)
+VALUES (
+    'AdminEco',
+    'admin@ecoride.com',
+    '$2y$10$e0NRffQaeVWgHkQvKZ2h0e9.Ty3MXkl6tsnEPI8edFEUVaU4cH1nW',
+    'admin'
+);
 
 -- Table employees
 CREATE TABLE IF NOT EXISTS employees (
