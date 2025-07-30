@@ -1,101 +1,98 @@
 <?php
-ob_start();
 session_start();
-require 'db.php';
+require_once 'db.php';
 
-// Redirection si non connecté
-if (!isset($_SESSION['admin'])) {
-    header("Location: login.php");
-    exit;
+// Vérification si l'utilisateur est bien administrateur
+if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'admin') {
+    header('Location: login.php');
+    exit();
 }
+// Requête total crédits
+$reqTotalCredits = $pdo->query("SELECT SUM(credits_prelevés_plateforme) AS total FROM transactions");
+$totalCredits = $reqTotalCredits->fetch()['total'] ?? 0;
 
-// Traitement ajout
-if (isset($_POST['add'])) {
-    $stmt = $pdo->prepare("INSERT INTO users (firstname, lastname, email) VALUES (?, ?, ?)");
-    $stmt->execute([$_POST['firstname'], $_POST['lastname'], $_POST['email']]);
-    header("Location: admin.php");
-    exit;
-}
-
-// Traitement suppression
-if (isset($_GET['delete'])) {
-    $stmt = $pdo->prepare("DELETE FROM users WHERE id = ?");
-    $stmt->execute([$_GET['delete']]);
-    header("Location: admin.php");
-    exit;
-}
-
-// Traitement modification
-if (isset($_POST['update'])) {
-    $stmt = $pdo->prepare("UPDATE users SET firstname = ?, lastname = ?, email = ? WHERE id = ?");
-    $stmt->execute([$_POST['firstname'], $_POST['lastname'], $_POST['email'], $_POST['id']]);
-    header("Location: admin.php");
-    exit;
-}
-
-// Si modification demandée
-$editUser = null;
-if (isset($_GET['edit'])) {
-    $stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
-    $stmt->execute([$_GET['edit']]);
-    $editUser = $stmt->fetch();
-}
-
-// Liste des utilisateurs
-$users = $pdo->query("SELECT * FROM users ORDER BY created_at DESC")->fetchAll();
+// Requête utilisateurs et employés
+$users = $pdo->query("SELECT id, pseudo, email, role, is_active FROM users")->fetchAll();
 ?>
 
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Admin - Gestion des utilisateurs</title>
-    <link rel="stylesheet" href="/backend/src/admin.css">
-    <link rel="stylesheet" href="">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Page d'administration pour la gestion des utilisateurs - EcoRide">
-    <meta name="author" content="EcoRide Team">     
-
+    <title>Administration - EcoRide</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="../assets/style.css">
 </head>
 <body>
-    <body class="d-flex flex-column min-vh-100">
-     <?php include 'header.php'; ?> 
-    <h2>👑 Bienvenue, <?= $_SESSION['admin'] ?> 
+    <h1>Espace Administrateur</h1>
 
-    <h3><?= $editUser ? "✏️ Modifier l'utilisateur" : "➕ Ajouter un utilisateur" ?></h3>
-    <form method="post">
-        <input type="hidden" name="id" value="<?= $editUser['id'] ?? '' ?>">
-        <input type="text" name="firstname" placeholder="Prénom" value="<?= $editUser['firstname'] ?? '' ?>" required>
-        <input type="text" name="lastname" placeholder="Nom" value="<?= $editUser['lastname'] ?? '' ?>" required>
-        <input type="email" name="email" placeholder="Email" value="<?= $editUser['email'] ?? '' ?>" required>
-        <button type="submit" name="<?= $editUser ? 'update' : 'add' ?>">
-            <?= $editUser ? 'Mettre à jour' : 'Ajouter' ?>
-        </button>
-    </form>
+    <section>
+        <h2>Total crédits gagnés : <?= htmlspecialchars($totalCredits) ?> ⚡</h2>
+    </section>
 
-    <h3>📋 Liste des utilisateurs</h3>
-    <table border="1" cellpadding="5">
-        <tr>
-            <th>ID</th><th>Prénom</th><th>Nom</th><th>Email</th><th>Créé le</th><th>Actions</th>
-        </tr>
-        <?php foreach ($users as $user): ?>
-        <tr>
-            <td><?= $user['id'] ?></td>
-            <td><?= htmlspecialchars($user['firstname']) ?></td>
-            <td><?= htmlspecialchars($user['lastname']) ?></td>
-            <td><?= htmlspecialchars($user['email']) ?></td>
-            <td><?= $user['created_at'] ?></td>
-            <td>
-                <a href="?edit=<?= $user['id'] ?>">✏️ Modifier</a> |
-                <a href="?delete=<?= $user['id'] ?>" onclick="return confirm('Supprimer cet utilisateur ?')">❌ Supprimer</a>
-            </td>
-        </tr>
-        <?php endforeach ?>
-    </table>
-    <?php include 'footer.php'; ?>
+    <section>
+        <h2>Graphique : Covoiturages par jour</h2>
+        <canvas id="ridesChart"></canvas>
 
+        <h2>Graphique : Crédits gagnés par jour</h2>
+        <canvas id="creditsChart"></canvas>
+    </section>
+
+    <section>
+        <h2>Gérer les comptes</h2>
+        <table border="1">
+            <tr><th>ID</th><th>Pseudo</th><th>Email</th><th>Rôle</th><th>Statut</th><th>Action</th></tr>
+            <?php foreach ($users as $u): ?>
+                <tr>
+                    <td><?= $u['id'] ?></td>
+                    <td><?= htmlspecialchars($u['pseudo']) ?></td>
+                    <td><?= htmlspecialchars($u['email']) ?></td>
+                    <td><?= $u['role'] ?></td>
+                    <td><?= $u['is_active'] ? 'Actif' : 'Suspendu' ?></td>
+                    <td>
+                        <?php if ($u['role'] !== 'admin'): ?>
+                            <form method="POST" action="suspend_user.php">
+                                <input type="hidden" name="user_id" value="<?= $u['id'] ?>">
+                                <input type="submit" name="action" value="<?= $u['is_active'] ? 'Suspendre' : 'Réactiver' ?>">
+                            </form>
+                        <?php endif; ?>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
+        </table>
+    </section>
+
+    <script>
+    // Graphiques via fetch API
+    fetch('chart_data.php')
+        .then(res => res.json())
+        .then(data => {
+            new Chart(document.getElementById('ridesChart'), {
+                type: 'line',
+                data: {
+                    labels: data.rides.labels,
+                    datasets: [{
+                        label: 'Covoiturages/jour',
+                        data: data.rides.data
+                    }]
+                }
+            });
+
+            new Chart(document.getElementById('creditsChart'), {
+                type: 'bar',
+                data: {
+                    labels: data.credits.labels,
+                    datasets: [{
+                        label: 'Crédits/jour',
+                        data: data.credits.data
+                    }]
+                }
+            });
+        });
+    </script>
 </body>
 </html>
+
 
 
 

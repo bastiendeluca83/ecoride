@@ -1,8 +1,13 @@
 <?php
-$pdo = new PDO(
-    'mysql:host=' . getenv("DB_HOST") . ';dbname=' . getenv("DB_NAME"),
-    getenv("DB_USER"),
-    getenv("DB_PASSWORD")
-);
-$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+$host = 'db'; 
+$dbname = 'ecoride';
+$user = 'root';
+$password = 'password';
 
+try {
+    $pdo = new PDO("mysql:host=$host;port=3306;dbname=$dbname;charset=utf8", $user, $password);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+} catch (PDOException $e) {
+    die("Erreur de connexion : " . $e->getMessage());
+}
+?>
